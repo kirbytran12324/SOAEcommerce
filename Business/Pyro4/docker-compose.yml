@@ -1,0 +1,31 @@
+version: '3'
+services:
+  order_server:
+    build:
+      context: ./server
+    container_name: order_server
+    networks:
+      - order_network
+    environment:
+      - PYRO_SERIALIZERS_ACCEPTED=serpent,json,marshal,pickle
+      - PYRO_SOCK_REUSE=True
+      - PYRO_REUSE_ADDR=True  # Allow address reuse
+
+  order_client:
+    build:
+      context: ./client
+    container_name: order_client
+    depends_on:
+      - order_server
+    networks:
+      - order_network
+    stdin_open: true
+    tty: true
+    environment:
+      - PYRO_SERIALIZERS_ACCEPTED=serpent,json,marshal,pickle
+      - PYRO_SOCK_REUSE=True  # Allow socket reuse
+      - PYRO_REUSE_ADDR=True  # Allow address reuse
+
+networks:
+  order_network:
+    driver: bridge
