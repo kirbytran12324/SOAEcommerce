@@ -1,6 +1,5 @@
 version: '3'
 services:
-
   mysql_container:
     image: mysql:latest
     container_name: mysql
@@ -8,7 +7,7 @@ services:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: ecommerce
     volumes:
-      - mysql_data:/var/lib/mysql
+      - .mysql/data:/var/lib/mysql
     networks:
       - order_network
     ports:

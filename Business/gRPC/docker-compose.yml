@@ -1,0 +1,52 @@
+version: '3'
+services:
+  mysql_container:
+    image: mysql:latest
+    container_name: grpc_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ecommerce
+    volumes:
+      - .mysql/data:/var/lib/mysql
+    networks:
+      - grpc_network
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+
+  order_server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    container_name: grpc_order_server
+    ports:
+      - "50051:50051"  # Expose gRPC server port
+    networks:
+      - grpc_network
+    depends_on:
+      mysql_container:
+        condition: service_healthy
+    command: python grpc_server.py
+
+  order_client:
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+    container_name: grpc_order_client
+    ports:
+      - "8089:8089"
+    networks:
+      - grpc_network
+    depends_on:
+      - order_server
+    stdin_open: true
+    tty: true
+    command: locust -f /app/locustfile.py --host=http://order_server --web-port=8089
+
+networks:
+  grpc_network:
+    driver: bridge

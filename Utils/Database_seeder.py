@@ -14,6 +14,7 @@ product_categories = {
 # Connect to MySQL
 conn = mysql.connector.connect(
     host="localhost",
+    port=3308,
     user="root",
     password="root",
     database="ecommerce"
