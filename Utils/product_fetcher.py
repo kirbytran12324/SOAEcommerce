@@ -6,7 +6,7 @@ def fetch_product_ids():
     try:
         conn = mysql.connector.connect(
             host="localhost",
-            port=3307,
+            port=3306,
             user="root",
             password="root",
             database="ecommerce"
@@ -18,7 +18,7 @@ def fetch_product_ids():
         conn.close()
 
         # Save to a JSON file
-        with open("../Business/gRPC/client/product_ids.json", "w") as f:
+        with open("../Business/Apache/client/product_ids.json", "w") as f:
             json.dump(product_ids, f)
         print(f"✅ Fetched {len(product_ids)} product IDs")
 
